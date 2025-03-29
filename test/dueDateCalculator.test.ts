@@ -1,10 +1,10 @@
-import dueDateCalculator from '../src/dueDateCalculator';
+import DueDateCalculator from '../src/DueDateCalculator';
 
-describe('dueDateCalculator', () => {
-    let calculator: dueDateCalculator;
+describe('DueDateCalculator', () => {
+    let calculator: DueDateCalculator;
 
     beforeEach(() => {
-        calculator = new dueDateCalculator();
+        calculator = new DueDateCalculator();
     });
         
     test('should calculate correct due date within same day working hours', () => {

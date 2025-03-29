@@ -14,7 +14,7 @@
  * 4. A problem can only be reported during working hours. (e.g. All submit date values are set between 9AM to 5PM.)
  */
 
-class dueDateCalculator {
+class DueDateCalculator {
     // Define working days and hours
     private readonly WORKING_DAYS = [1, 2, 3, 4, 5];
     private readonly WORKING_START_HOUR = 9;
@@ -108,4 +108,4 @@ class dueDateCalculator {
     }
 }
 
-export default dueDateCalculator;
+export default DueDateCalculator;
