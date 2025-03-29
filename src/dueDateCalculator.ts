@@ -17,7 +17,6 @@
 class dueDateCalculator {
     // Define working days and hours
     private readonly WORKING_DAYS = [1, 2, 3, 4, 5];
-    private readonly WORKING_HOURS_PER_DAY = 8;
     private readonly WORKING_START_HOUR = 9;
     private readonly WORKING_END_HOUR = 17;
 
@@ -39,22 +38,19 @@ class dueDateCalculator {
         while (turnaroundMinutesLeft > 0) {
             if (this.isWorkingDay(dueDate)){
                 // Calculate the time left in the current day, preserving the minutes
-                const minutesLeftCurrentDay = this.WORKING_END_HOUR * 60 - 
-                                                (dueDate.getHours() * 60 + dueDate.getMinutes());
+                const minutesLeftCurrentDay = this.getMinutesLeftCurrentDay(dueDate);
                 // If the time left in the current day are enough to cover the turnaround hours left
                 if (minutesLeftCurrentDay >= turnaroundMinutesLeft){
                     dueDate.setMinutes(dueDate.getMinutes() + turnaroundMinutesLeft);
                     turnaroundMinutesLeft = 0;
                 }else {
-                    // If not, update to the next working day
+                    // reset to the next working day
                     turnaroundMinutesLeft -= minutesLeftCurrentDay;
-                    dueDate.setDate(dueDate.getDate() + 1);
-                    dueDate.setHours(this.WORKING_START_HOUR, 0, 0, 0);
+                    this.setToNextDay(dueDate);
                 }
             }else {
-                // If not a working day, skip weekend
-                dueDate.setDate(dueDate.getDate() + 1);
-                dueDate.setHours(this.WORKING_START_HOUR, 0, 0, 0);
+                // If not a working day, skip
+                this.setToNextDay(dueDate);
             }
         }
 
@@ -100,6 +96,15 @@ class dueDateCalculator {
         if (turnaroundHours <= 0) {
             throw new Error('Turnaround time must be greater than 0.');
         }
+    }
+
+    private getMinutesLeftCurrentDay(dueDate: Date): number {
+        return this.WORKING_END_HOUR * 60 - (dueDate.getHours() * 60 + dueDate.getMinutes());
+    }
+
+    private setToNextDay(dueDate: Date): void {
+        dueDate.setDate(dueDate.getDate() + 1);
+        dueDate.setHours(this.WORKING_START_HOUR, 0, 0, 0);
     }
 }
 
