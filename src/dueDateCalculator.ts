@@ -14,10 +14,32 @@
  */
 
 class dueDateCalculator {
-    calculateDueDate(submitTime: Date, turnaroundTime: number): Date {
-        const dueDate = new Date(submitTime);
-        dueDate.setHours(dueDate.getHours() + turnaroundTime);
-        
+    // Define working days and hours
+    private readonly WORKING_DAYS = [1, 2, 3, 4, 5];
+    private readonly WORKING_HOURS_PER_DAY = 8;
+    private readonly WORKING_START_HOUR = 9;
+    private readonly WORKING_END_HOUR = 17;
+
+    calculateDueDate(submitDate: Date, turnaroundHours: number): Date {
+        let dueDate = new Date(submitDate); // Initialize due date as submit date
+        let turnaroundHoursLeft = turnaroundHours;
+
+        // Calculate working days and hours
+        while (turnaroundHoursLeft > 0) {
+            // Check current day working hours left
+            const hoursLeftCurrentDay = this.WORKING_END_HOUR - dueDate.getHours();
+            // If the current day working hours left are enough to cover the turnaround hours left  
+            if (hoursLeftCurrentDay >= turnaroundHoursLeft) {
+                dueDate.setHours(dueDate.getHours() + turnaroundHoursLeft);
+                turnaroundHoursLeft = 0;
+            }else{
+                // If not, update to the next working day
+                turnaroundHoursLeft -= hoursLeftCurrentDay;
+                dueDate.setDate(dueDate.getDate() + 1);
+                dueDate.setHours(this.WORKING_START_HOUR);
+            }
+        }
+
         return dueDate;
     }
 }
