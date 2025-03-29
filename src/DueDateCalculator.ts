@@ -16,7 +16,6 @@
 
 class DueDateCalculator {
     // Define working days and hours
-    private readonly WORKING_DAYS = [1, 2, 3, 4, 5];
     private readonly WORKING_START_HOUR = 9;
     private readonly WORKING_END_HOUR = 17;
     /**
@@ -83,8 +82,7 @@ class DueDateCalculator {
      * @return boolean - True if the date is a working day, false otherwise
      */
     private isWorkingDay(currentDate: Date): boolean {
-        const day = currentDate.getUTCDay();
-        return this.WORKING_DAYS.includes(day);
+        return currentDate.getUTCDay() % 6 !== 0; // 0 = Sunday, 6 = Saturday
     }
 
     /**
@@ -95,15 +93,13 @@ class DueDateCalculator {
 
     private isWithinWorkingHours(currentDate: Date): boolean {
         const hours = currentDate.getUTCHours();
-        return hours >= this.WORKING_START_HOUR && hours <= this.WORKING_END_HOUR;
+        const minutes = currentDate.getUTCMinutes();
+        const seconds = currentDate.getUTCSeconds();
+        
+        return hours >= this.WORKING_START_HOUR && hours < this.WORKING_END_HOUR ||
+               (hours === this.WORKING_END_HOUR && minutes === 0 && seconds === 0);
     }
 
-    /**
-     * Validate the submit date and turnaround time
-     * @param submitDate Date - The date when the problem was reported
-     * @param turnaroundHours number - The turnaround time in working hours
-     */
-    
     /**
      * Calculate the time left in the current day in minutes
      * @param currentDate Date - The date to check

@@ -6,6 +6,14 @@ describe('DueDateCalculator', () => {
     beforeEach(() => {
         calculator = new DueDateCalculator();
     });
+
+    test('should calculate correct due date within same day working hours', () => {
+        const submitDate = new Date('2025-03-28T09:00:00Z');
+        const turnaroundHours = 4;
+        const dueDate = calculator.calculateDueDate(submitDate, turnaroundHours);
+        expect(dueDate.getUTCDate()).toBe(28);
+        expect(dueDate.getUTCHours()).toBe(13);
+    });
         
     test('should calculate correct due date within same day working hours', () => {
         const submitDate = new Date('2025-03-28T09:00:00Z');
@@ -21,7 +29,7 @@ describe('DueDateCalculator', () => {
         const dueDate = calculator.calculateDueDate(submitDate, turnaroundHours);
         expect(dueDate.getUTCDate()).toBe(27);
         expect(dueDate.getUTCHours()).toBe(14);
-        expect(dueDate.getMinutes()).toBe(12);
+        expect(dueDate.getUTCMinutes()).toBe(12);
     });
 
     test('should calculate correct due date across multiple working days within working hours', () => {
@@ -30,14 +38,23 @@ describe('DueDateCalculator', () => {
         const dueDate = calculator.calculateDueDate(submitDate, turnaroundHours);
         expect(dueDate.getUTCDate()).toBe(26);
         expect(dueDate.getUTCHours()).toBe(9);
-        expect(dueDate.getMinutes()).toBe(15);
+        expect(dueDate.getUTCMinutes()).toBe(15);
+    });
+
+    test('should calculate correct due date across multiple working days within working hours', () => {
+        const submitDate = new Date('2025-03-28T17:00:00Z');
+        const turnaroundHours = 41;
+        const dueDate = calculator.calculateDueDate(submitDate, turnaroundHours);
+        expect(dueDate.getUTCMonth()).toBe(3);
+        expect(dueDate.getUTCDate()).toBe(7);
+        expect(dueDate.getUTCHours()).toBe(10);
     });
 
     test('should calculate correct due date when due date falls on a weekend', () => {
         const submitDate = new Date('2025-03-28T15:00:00Z');
         const turnaroundHours = 16;
         const dueDate = calculator.calculateDueDate(submitDate, turnaroundHours);
-        expect(dueDate.getMonth()).toBe(3); // April 1st: getMonth() is 0-indexed
+        expect(dueDate.getUTCMonth()).toBe(3); // April 1st: getMonth() is 0-indexed
         expect(dueDate.getUTCDate()).toBe(1);
         expect(dueDate.getUTCHours()).toBe(15);
     });
@@ -52,6 +69,14 @@ describe('DueDateCalculator', () => {
 
     test('should throw error when submit date is outside working hours', () => {
         const submitDate = new Date('2025-03-28T08:00:00Z');
+        const turnaroundHours = 8;
+        expect(() => {
+            calculator.calculateDueDate(submitDate, turnaroundHours);
+        }).toThrow('Submit date is outside working hours (9AM-5PM). A problem can only be reported during working hours.');
+    });
+
+    test('should throw error when submit date is outside working hours', () => {
+        const submitDate = new Date('2025-03-28T17:00:01Z');
         const turnaroundHours = 8;
         expect(() => {
             calculator.calculateDueDate(submitDate, turnaroundHours);
