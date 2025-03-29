@@ -19,7 +19,6 @@ class DueDateCalculator {
     private readonly WORKING_DAYS = [1, 2, 3, 4, 5];
     private readonly WORKING_START_HOUR = 9;
     private readonly WORKING_END_HOUR = 17;
-
     /**
      * @param submitDate Date - The date when the problem was reported
      * @param turnaroundHours number - The turnaround time in working hours
@@ -56,6 +55,32 @@ class DueDateCalculator {
 
         return dueDate;
     }
+    /**
+     * Validate the submit date and turnaround time
+     * @param submitDate Date - The date when the problem was reported
+     * @param turnaroundHours number - The turnaround time in working hours
+     */
+    private validateSubmitDate(submitDate: Date, turnaroundHours: number): void {
+        if (submitDate == null || Number.isNaN(submitDate.getTime())) {
+            throw new Error('Submit date must be a valid Date object.');
+        }
+
+        if (Number.isNaN(turnaroundHours) ||  
+            turnaroundHours == null ||
+            typeof turnaroundHours !== 'number' ||
+            !isFinite(turnaroundHours) ||
+            turnaroundHours <= 0) {
+            throw new Error('Turnaround time must be a valid number greater than 0.');
+        }
+
+        if (!this.isWorkingDay(submitDate)) {
+            throw new Error('Submit date is outside working days (Monday to Friday). A problem can only be reported during working days.');
+        }
+
+        if (!this.isWithinWorkingHours(submitDate)) {
+            throw new Error('Submit date is outside working hours (9AM-5PM). A problem can only be reported during working hours.');
+        }
+    }
 
     /**
      * Check if the submit date is within working days
@@ -83,20 +108,7 @@ class DueDateCalculator {
      * @param submitDate Date - The date when the problem was reported
      * @param turnaroundHours number - The turnaround time in working hours
      */
-    private validateSubmitDate(submitDate: Date, turnaroundHours: number): void {
-        if (!this.isWorkingDay(submitDate)) {
-            throw new Error('Submit date is outside working days (Monday to Friday). A problem can only be reported during working days.');
-        }
-
-        if (!this.isWithinWorkingHours(submitDate)) {
-            throw new Error('Submit date is outside working hours (9AM-5PM). A problem can only be reported during working hours.');
-        }
-
-        if (turnaroundHours <= 0) {
-            throw new Error('Turnaround time must be greater than 0.');
-        }
-    }
-
+    
     /**
      * Calculate the time left in the current day in minutes
      * @param currentDate Date - The date to check

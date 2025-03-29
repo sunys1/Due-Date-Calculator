@@ -58,19 +58,35 @@ describe('DueDateCalculator', () => {
         }).toThrow('Submit date is outside working hours (9AM-5PM). A problem can only be reported during working hours.');
     });
 
+    test('should throw error when submit date is not a valid date', () => {
+        const submitDate = new Date('invalid date');
+        const turnaroundHours = 8;
+        expect(() => {
+            calculator.calculateDueDate(submitDate, turnaroundHours);
+        }).toThrow('Submit date must be a valid Date object.');
+    });
+
     test('should throw error when turnaround hours is negative', () => {
         const submitDate = new Date('2025-03-28T09:00:00');
         const turnaroundHours = -8;
         expect(() => {
             calculator.calculateDueDate(submitDate, turnaroundHours);
-        }).toThrow('Turnaround time must be greater than 0.');
+        }).toThrow('Turnaround time must be a valid number greater than 0.');
     });
 
-    test('should throw error when turnaround hours is less than or equal to 0', () => {
+    test('should throw error when turnaround hours is equal to 0', () => {
         const submitDate = new Date('2025-03-28T09:00:00');
         const turnaroundHours = 0;
         expect(() => {
             calculator.calculateDueDate(submitDate, turnaroundHours);
-        }).toThrow('Turnaround time must be greater than 0.');
+        }).toThrow('Turnaround time must be a valid number greater than 0.');
+    });
+
+    test('should throw error when turnaround hours is NaN', () => {
+        const submitDate = new Date('2025-03-28T09:00:00');
+        const turnaroundHours = NaN;
+        expect(() => {
+            calculator.calculateDueDate(submitDate, turnaroundHours);
+        }).toThrow('Turnaround time must be a valid number greater than 0.');
     });
 })
