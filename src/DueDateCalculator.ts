@@ -35,21 +35,16 @@ class DueDateCalculator {
 
         // Calculate working days and hours
         while (turnaroundMinutesLeft > 0) {
-            if (this.isWorkingDay(dueDate)){
-                // Calculate the time left in the current day, preserving the minutes
-                const minutesLeftCurrentDay = this.getMinutesLeftCurrentDay(dueDate);
-                // If the time left in the current day are enough to cover the turnaround hours left
-                if (minutesLeftCurrentDay >= turnaroundMinutesLeft){
-                    dueDate.setUTCMinutes(dueDate.getUTCMinutes() + turnaroundMinutesLeft);
-                    turnaroundMinutesLeft = 0;
-                }else {
-                    // reset to the next working day
-                    turnaroundMinutesLeft -= minutesLeftCurrentDay;
-                    this.setToNextDay(dueDate);
-                }
+            // Calculate the time left in the current day, preserving the minutes
+            const minutesLeftCurrentDay = this.getMinutesLeftCurrentDay(dueDate);
+            // If the time left in the current day are enough to cover the turnaround hours left
+            if (minutesLeftCurrentDay >= turnaroundMinutesLeft){
+                dueDate.setUTCMinutes(dueDate.getUTCMinutes() + turnaroundMinutesLeft);
+                turnaroundMinutesLeft = 0;
             }else {
-                // If not a working day, skip
-                this.setToNextDay(dueDate);
+                // reset to the next working day
+                turnaroundMinutesLeft -= minutesLeftCurrentDay;
+                this.setToNextWorkingDay(dueDate);
             }
         }
 
@@ -119,11 +114,14 @@ class DueDateCalculator {
     }
 
     /**
-     * Skip to next day
+     * Skip to next working day
      * @param currentDate Date - The date to check
      */
-    private setToNextDay(currentDate: Date): void {
-        currentDate.setUTCDate(currentDate.getDate() + 1);
+    private setToNextWorkingDay(currentDate: Date): void {
+        do {
+            currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+        }while (!this.isWorkingDay(currentDate))
+        // Set time to start of the working day
         currentDate.setUTCHours(this.WORKING_START_HOUR, 0, 0, 0);
     }
 }
