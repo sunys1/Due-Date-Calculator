@@ -59,23 +59,22 @@ class DueDateCalculator {
 
     /**
      * Check if the submit date is within working days
-     * @param date Date - The date to check
+     * @param currentDate Date - The date to check
      * @return boolean - True if the date is a working day, false otherwise
      */
-
-    private isWorkingDay(submitDate: Date): boolean {
-        const day = submitDate.getDay();
+    private isWorkingDay(currentDate: Date): boolean {
+        const day = currentDate.getDay();
         return this.WORKING_DAYS.includes(day);
     }
 
     /**
      * Check if the submit date is within working hours
-     * @param date Date - The date to check
+     * @param currentDate Date - The date to check
      * @return boolean - True if the date is within working hours, false otherwise
      */
 
-    private isWithinWorkingHours(submitDate: Date): boolean {
-        const hours = submitDate.getHours();
+    private isWithinWorkingHours(currentDate: Date): boolean {
+        const hours = currentDate.getHours();
         return hours >= this.WORKING_START_HOUR && hours <= this.WORKING_END_HOUR;
     }
 
@@ -98,13 +97,22 @@ class DueDateCalculator {
         }
     }
 
-    private getMinutesLeftCurrentDay(dueDate: Date): number {
-        return this.WORKING_END_HOUR * 60 - (dueDate.getHours() * 60 + dueDate.getMinutes());
+    /**
+     * Calculate the time left in the current day in minutes
+     * @param currentDate Date - The date to check
+     * @returns number - The time left in the current working day in minutes
+     */
+    private getMinutesLeftCurrentDay(currentDate: Date): number {
+        return this.WORKING_END_HOUR * 60 - (currentDate.getHours() * 60 + currentDate.getMinutes());
     }
 
-    private setToNextDay(dueDate: Date): void {
-        dueDate.setDate(dueDate.getDate() + 1);
-        dueDate.setHours(this.WORKING_START_HOUR, 0, 0, 0);
+    /**
+     * Skip to next day
+     * @param currentDate Date - The date to check
+     */
+    private setToNextDay(currentDate: Date): void {
+        currentDate.setDate(currentDate.getDate() + 1);
+        currentDate.setHours(this.WORKING_START_HOUR, 0, 0, 0);
     }
 }
 
