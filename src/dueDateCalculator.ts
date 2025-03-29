@@ -4,6 +4,7 @@
  * Date: 2025-03-28
  * 
  * Description: Implement a due date calculator method in an issue tracking system
+ * 
  * 1. Working hours are from 9AM to 5PM on every working day, Monday to Friday.  
  * 2. Holidays should be ignored (e.g. A holiday on a Thursday is considered as a working day. 
  *    A working Saturday counts as a non-working day.)
@@ -31,27 +32,29 @@ class dueDateCalculator {
 
         // Initialize due date as submit date
         const dueDate = new Date(submitDate);
-        // keep track of the remaining turnaround time
-        let turnaroundHoursLeft = turnaroundHours;
+        // keep track of the remaining turnaround time. Convert to minutes to preserve minutes in calculation
+        let turnaroundMinutesLeft = turnaroundHours * 60;
 
         // Calculate working days and hours
-        while (turnaroundHoursLeft > 0) {
-            if(this.isWorkingDay(dueDate)){
-                const hoursLeftCurrentDay = this.WORKING_END_HOUR - dueDate.getHours();
-                // If the current day working hours left are enough to cover the turnaround hours left
-                if (hoursLeftCurrentDay >= turnaroundHoursLeft) {
-                    dueDate.setHours(dueDate.getHours() + turnaroundHoursLeft);
-                    turnaroundHoursLeft = 0;
-                }else{
+        while (turnaroundMinutesLeft > 0) {
+            if (this.isWorkingDay(dueDate)){
+                // Calculate the time left in the current day, preserving the minutes
+                const minutesLeftCurrentDay = this.WORKING_END_HOUR * 60 - 
+                                                (dueDate.getHours() * 60 + dueDate.getMinutes());
+                // If the time left in the current day are enough to cover the turnaround hours left
+                if (minutesLeftCurrentDay >= turnaroundMinutesLeft){
+                    dueDate.setMinutes(dueDate.getMinutes() + turnaroundMinutesLeft);
+                    turnaroundMinutesLeft = 0;
+                }else {
                     // If not, update to the next working day
-                    turnaroundHoursLeft -= hoursLeftCurrentDay;
+                    turnaroundMinutesLeft -= minutesLeftCurrentDay;
                     dueDate.setDate(dueDate.getDate() + 1);
-                    dueDate.setHours(this.WORKING_START_HOUR);
+                    dueDate.setHours(this.WORKING_START_HOUR, 0, 0, 0);
                 }
-            }else{
+            }else {
                 // If not a working day, skip weekend
                 dueDate.setDate(dueDate.getDate() + 1);
-                dueDate.setHours(this.WORKING_START_HOUR);
+                dueDate.setHours(this.WORKING_START_HOUR, 0, 0, 0);
             }
         }
 
@@ -86,7 +89,7 @@ class dueDateCalculator {
      * @param turnaroundHours number - The turnaround time in working hours
      */
     private validateSubmitDate(submitDate: Date, turnaroundHours: number): void {
-        if(!this.isWorkingDay(submitDate)) {
+        if (!this.isWorkingDay(submitDate)) {
             throw new Error('Submit date is outside working days (Monday to Friday). A problem can only be reported during working days.');
         }
 

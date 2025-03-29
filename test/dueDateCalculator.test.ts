@@ -24,6 +24,15 @@ describe('dueDateCalculator', () => {
         expect(dueDate.getMinutes()).toBe(12);
     });
 
+    test('should calculate correct due date across multiple working days within working hours', () => {
+        const submitDate = new Date('2025-03-25 12:15:00');
+        const turnaroundHours = 5;
+        const dueDate = calculator.calculateDueDate(submitDate, turnaroundHours);
+        expect(dueDate.getDate()).toBe(26);
+        expect(dueDate.getHours()).toBe(9);
+        expect(dueDate.getMinutes()).toBe(15);
+    });
+
     test('should calculate correct due date when due date falls on a weekend', () => {
         const submitDate = new Date('2025-03-28 15:00:00');
         const turnaroundHours = 16;
