@@ -40,7 +40,7 @@ class DueDateCalculator {
                 const minutesLeftCurrentDay = this.getMinutesLeftCurrentDay(dueDate);
                 // If the time left in the current day are enough to cover the turnaround hours left
                 if (minutesLeftCurrentDay >= turnaroundMinutesLeft){
-                    dueDate.setMinutes(dueDate.getMinutes() + turnaroundMinutesLeft);
+                    dueDate.setUTCMinutes(dueDate.getUTCMinutes() + turnaroundMinutesLeft);
                     turnaroundMinutesLeft = 0;
                 }else {
                     // reset to the next working day
@@ -88,7 +88,7 @@ class DueDateCalculator {
      * @return boolean - True if the date is a working day, false otherwise
      */
     private isWorkingDay(currentDate: Date): boolean {
-        const day = currentDate.getDay();
+        const day = currentDate.getUTCDay();
         return this.WORKING_DAYS.includes(day);
     }
 
@@ -99,7 +99,7 @@ class DueDateCalculator {
      */
 
     private isWithinWorkingHours(currentDate: Date): boolean {
-        const hours = currentDate.getHours();
+        const hours = currentDate.getUTCHours();
         return hours >= this.WORKING_START_HOUR && hours <= this.WORKING_END_HOUR;
     }
 
@@ -115,7 +115,7 @@ class DueDateCalculator {
      * @returns number - The time left in the current working day in minutes
      */
     private getMinutesLeftCurrentDay(currentDate: Date): number {
-        return this.WORKING_END_HOUR * 60 - (currentDate.getHours() * 60 + currentDate.getMinutes());
+        return this.WORKING_END_HOUR * 60 - (currentDate.getUTCHours() * 60 + currentDate.getUTCMinutes());
     }
 
     /**
@@ -123,8 +123,8 @@ class DueDateCalculator {
      * @param currentDate Date - The date to check
      */
     private setToNextDay(currentDate: Date): void {
-        currentDate.setDate(currentDate.getDate() + 1);
-        currentDate.setHours(this.WORKING_START_HOUR, 0, 0, 0);
+        currentDate.setUTCDate(currentDate.getDate() + 1);
+        currentDate.setUTCHours(this.WORKING_START_HOUR, 0, 0, 0);
     }
 }
 
